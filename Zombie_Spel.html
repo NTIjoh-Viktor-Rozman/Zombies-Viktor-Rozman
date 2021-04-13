@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<head>
+
+  <script src="https://koda.nu/simple.js">
+
+    updatesPerSecond = 60; // 60 FRAMES PER SECOND BABY!!!!!!!!!!
+    
+    // Variables
+    
+    var zombies = []; // Zombie-Listan
+    var zombieCount = 20; // Antalet Zombies
+    var zombiespeed = 0; // Zombie Fart
+    var sheild = 0; // Tiden skölden är aktiverad
+    var sheildCount = 1; // Antal Sköldar
+    var i = 0; // Används för while satsen
+    var startDelay = 180; // "StartDelayns" nedräknare
+    var startDelayCount = 3; // Det numret som visas på skärmen då "StartDelayn" är aktiv
+    var Start = 1; // Om "StartDelayn" är klart
+    var END = 0; // Stoppa spelet om man dör
+    var life = 1; // Tiden livskölden är aktiv om du tar skada
+    var lifeCount = 1; // Antal återstående liv
+    var play = 0; // Om användaren har lämnat menyn
+    var title = "X-Day";                    //
+    var enter = "Press Enter To Start";     //  Variabler
+    var easyColor = "gray";                 //  
+    var easyText = "Easy";                  //  För
+    var hardColor = "gray";                 //
+    var hardText = "Hard";                  //  Menyn
+    var diffText = "1 for Easy, 2 for Hard";//
+    var gameDiff = 0; // Svårhetsgraden på spelet
+    var gameDiffSet = 0; // Om användaren har valt en svårhetsgrad
+    var zombieSpeedMax = 0; // Maxfarten på zombies (Beroende på svårhetsgrad)
+    var timerSec = 0; // Tiden i sekunder
+    var timer = 0; // Tiden i frames
+    var timerDelay = 0;
+    var timerMin = 0; // Tiden i minuter
+    var points = 0; // Antal Poäng
+    
+    // Variables End
+    
+    while (i < zombieCount) // Syklar igenom antalet zombies
+    {
+      zombies.push({x: random(110, totalWidth-120), y: random(50, totalHeight-70)}); // Skapar en Zombie på skärmen
+      i += 1
+    }
+    
+    // Update Function
+    
+    function update() 
+    {
+      clearScreen(); // Tömmer skärmen
+      
+      // Overlay Code
+
+      fill("red"); // Röda Kanten runt skärmen
+      rectangle(100, 10, totalWidth-110, totalHeight-20, "black"); // Bakgrunden
+      rectangle(10, 10, 80, totalHeight-20, "gray"); // SidMenyn
+
+      // Overlay Code End
+
+      // Menu Code
+
+      text(totalWidth/2 - 190, totalHeight/2 - 80, 120, title, "red")       //
+      text(totalWidth/2 - 120, totalHeight/2 + 55, 30, easyText, easyColor) // Texten
+      text(totalWidth/2 + 120, totalHeight/2 + 55, 30, hardText, hardColor) // På
+      text(totalWidth/2 - 125, totalHeight/2 - 10, 20, diffText, "gray")    // Menyn
+      text(totalWidth/2 - 200, totalHeight/2 + 130, 30, enter, "gray")      //
+
+      if (keyboard.one) {gameDiff = 1} // Svårhetsgraden för "Easy" läge
+      if (keyboard.two) {gameDiff = 2} // Svårhetsgraden för "Hard" läge
+
+      if (gameDiff == 1) { // Kollar om Svårhetgraden är på "Easy"
+        if (gameDiffSet == 0) { // Stoppar användaren från att byta mellan Svårhetsgraderna pga BUGG
+          easyColor = "green" // Ändrar färg på "Easy" texten
+          zombieSpeedMax = 3; // Sätter en Maxfart
+          gameDiffSet = 1; // Ser till att koden vet att svårhetsläget är satt
+        }
+      }
+
+      if (gameDiff == 2) { // Kollar om Svårhetsgraden är på "Hard"
+        if (gameDiffSet == 0) { // Stoppar användaren från att byta mellan Svårhetsgraderna pga BUGG
+          hardColor = "red" // Ändrar färg på "Hard" texten
+          zombieSpeedMax = 7; // sätter en Maxfart
+          lifeCount = 0; // Ändrar antaler liv till 0
+          sheildCount = 0; // Ändrar antaler sköldar till 0
+          gameDiffSet = 1; // Ser till att koden vet att svårhetsläget är satt
+        }
+      }
+
+      if (keyboard.enter) { // Kollar om enter klickas
+        if(gameDiffSet == 1) { // Kollar om man har valt en svårhetsgrad
+          play = 1; // Säger till datorn att starta spelet
+        }
+      }
+
+      text (23, 70, 16, "Life", "red")          //
+      text (35, 120, 40, lifeCount, "red");     // Texten som finns
+      text (10, 250, 16, "Sheild", "blue")      // i sido menyn
+      text (35, 300, 40, sheildCount, "blue");  //
+
+      if (play == 1) { // Startar Spelet
+
+        title = "";     //
+        enter = "";     //
+        easyText = "";  // Tar Bort meny texten från skärmen
+        hardText = "";  //
+        diffText = "";  //
+
+        // Menu Code End
+
+        // Start Delay Code
+      
+        text (190, 180, 100, startDelayCount, "red") // Nedräknings Klockan
+      
+        if (startDelay == 120) {startDelayCount -= 1} // Gör att klockan räknar ner
+        if (startDelay == 60) {startDelayCount -= 1}  //
+        
+        if (startDelay > 0) {startDelay -= 1;} // Räknar ner 180 Frames (3 sekunder)
+      
+        if (startDelay == 0) { // Kollar om klockan är på 0
+          startDelayCount = ""; // Tar bort klockan från skärmen
+          Start = 0; // Berättar för datorn att klockan är klar
+        }
+      
+        // Start Delay Code End
+
+        // Timer and Points Code
+
+        if (Start == 0){          //
+          if (timer == 60) {      //
+            timer = 0;            // Ränkar upp sekunderna och poängen på tidtagaruret
+            timerSec += 1;        // 
+            points += 1;          //
+          }
+          if (timer < 60) {       // Räknar antalet Frames
+            timer += 1;           //
+          }
+          if (timerSec == 60) {   //
+            timerSec = 0;         // Räknar upp antal Minuter
+            timerMin += 1;        //
+          }
+
+        }
+        text (18, 400, 16, "Timer", "yellow"); // "Timer" texten
+        text (18, 550, 40, timer, "yellow"); // "Antalet Frames" texten
+        text (18, 500, 40, timerSec, "yellow"); // "Antalet Sekunder" texten
+        text (18, 450, 40, timerMin, "yellow"); // "Antalet Minuter" texten
+
+        //Timer and Points Code End
+
+        // Life Code
+
+        text (23, 70, 16, "Life", "red"); // "Life" texten
+        text (35, 120, 40, lifeCount, "red"); // "Antalet Liv" texten
+
+        if (life == 60) { // Kollar om du har tagit skada
+          lifeCount -= 1; // Tar bort ett liv från dina maxliv
+        }
+
+        if (life > 1) { // Räknar in 59 frames då man är odödlig efter skada
+          life -= 1; 
+          circle(mouse.x, mouse.y, 25, "yellow"); // Din gula bubla ikån
+        }
+
+        // Life Code End
+        
+        // Sheild Code
+
+        text (10, 250, 16, "Sheild", "blue"); // "Shield" texten
+        text (35, 300, 40, sheildCount, "blue"); // "Antal Shields" texten
+        
+        if (keyboard.space) { // Kollar om man trycker mellanslag
+          if (sheildCount > 0) { // Kollar om du har sköldar kvar
+            sheild = 180; // Sätter "shield" till 180
+            sheildCount -= 1; // Minskar din maximala sköldantal med 1
+          }
+        }
+        if (sheild > 0) { // Räknar in 180 frames då du är odödlig under Sköld effekten
+          sheild -= 1; }  //
+        
+        if (sheild > 120) {                                             //
+          circle(mouse.x - 20, mouse.y - 36, 5, mixColor(0, 20, 256));  //
+          circle(mouse.x, mouse.y, 30, mixColor(0, 20, 256));}          //
+        if (sheild > 60) {                                              // Animationer
+          circle(mouse.x, mouse.y - 40, 5, mixColor(0, 125, 256));      // För
+          circle(mouse.x, mouse.y, 25, mixColor(0, 125, 256));}         // Skölden
+        if (sheild > 1) {                                               //
+          circle(mouse.x + 20, mouse.y - 36, 5, mixColor(0, 190, 256)); //
+          circle(mouse.x, mouse.y, 20, mixColor(0, 190, 256));}         //
+        
+        // Sheild Code End
+        
+        circle(mouse.x, mouse.y, 15, "red"); // Din Gubbe!! YEET!
+        
+        // Zombie Code
+        
+        i = 0;
+        
+        while (i < zombieCount) // Syklar igenom antalet zombies 
+        {
+          var zombie = zombies[i]; // Plockar ut en zombie ur Zombie-Listan
+          
+          if (startDelay == 0) { // Kollar om spelet har startat
+            zombiespeed = random(1,zombieSpeedMax); // Ger en zombie är random far mellan 1 och SpeedMax som beror på Svårhetsgraden
+          }
+        
+          picture(zombie.x - 25, zombie.y - 60, "zombie (1).png") // Laddar in bilden på zombien
+          
+          var dx = zombiespeed*(mouse.x - zombie.x)/distance(zombie, mouse); // Räknar ut i vilken x zombien ska gå
+          var dy = zombiespeed*(mouse.y - zombie.y)/distance(zombie, mouse); // Räknar ut i vilken y zombien ska gå
+
+          zombie.x += dx // Gör att zombien går det uträknade x riktningen
+          zombie.y += dy // Gör att zombien går det uträknade y riktningen
+          
+          // Zombie Code End
+          
+          // Lose Conditions Code
+
+          if (Start == 0){ // Kollar om spelet har startat
+            if (distance(mouse.x, mouse.y, zombie.x, zombie.y) < 15) { // Kollar om spelaren tar skada
+              if (sheild == 0) { // Kollar om du har en sköld aktiverad
+                if (lifeCount > 0) { // Kollar om du har mer än 1 liv kvar
+                  life = 60; // Sätter "LivDelayn" till 60 om du hade liv kvar
+                }
+              }
+              if (life == 1) { // Kollar om din "LivDelay" är aktiverad
+                if (sheild == 0) { // Kollar om du har en sköld aktiverad
+                  END = 1; // Sätter END = 1
+                }
+              }
+            }
+            if (mouse.x < 115) {END = 1}            //
+            if (mouse.x > totalWidth-25) {END = 1}  // Kåd som kollar om du har rört vid kanten på kartan
+            if (mouse.y < 25) {END = 1}             // om detta är sant så förlorar du spelet!
+            if (mouse.y > totalHeight-25) {END = 1} //
+          }
+
+          if (END == 1) { // Kollar om END == 1
+            stopUpdate(); // GAME OVER!
+            rectangle(110, 40, 420, 270, "grey") // Kanten på Popupprutan
+            rectangle(120, 50, 400, 250, "black") // Bakgrunden på Popupprutan
+            text(170, 100, 40, "Game Over", "red") // "GAME OVER!" texten
+            text(185, 150, 30, "Your Score:", "red") // "Dina poäng" texten
+            text(200, 235, 40, points, "yellow") // Antalet poäng du fick, baserat på hur många sekunder du överlevde
+          }
+
+          // Lose Conditions Code End
+
+          i += 1; // Easter egg för att se om du läste alla komentarer ( Vilket jag troligen inte hade gjort ). Om Du hittar detta är du kung!
+        }
+      }
+    }
+    
+    // Update Function End
+  
+  </script>
+</head>
