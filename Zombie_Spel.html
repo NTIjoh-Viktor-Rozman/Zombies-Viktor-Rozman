@@ -190,7 +190,7 @@
         
         // Sheild Code End
         
-        picture(mouse.x - 20, mouse.y - 20, "pacman_PNG79 (1).png"); // Din Gubbe go YEET!
+        picture(mouse.x - 20, mouse.y - 20, "./img/pacman_PNG79 (1).png"); // Din Gubbe go YEET!
         
         // Zombie Code
         
@@ -204,7 +204,7 @@
             zombiespeed = random(1,zombieSpeedMax); // Ger en zombie är random far mellan 1 och SpeedMax som beror på Svårhetsgraden
           }
         
-          picture(zombie.x - 25, zombie.y - 60, "zombie (1).png") // Laddar in bilden på zombien
+          picture(zombie.x - 25, zombie.y - 60, "./img/zombie (1).png") // Laddar in bilden på zombien
           
           var dx = zombiespeed*(mouse.x - zombie.x)/distance(zombie, mouse); // Räknar ut i vilken x zombien ska gå
           var dy = zombiespeed*(mouse.y - zombie.y)/distance(zombie, mouse); // Räknar ut i vilken y zombien ska gå
